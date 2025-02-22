@@ -9,9 +9,6 @@ export const uploadPhotos = async (photos: File[]): Promise<Photography> => {
 
   const response = await fetch(`${BASE_URL}/upload-multiple`, {
     method: "POST",
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
     body: formData,
   });
 
@@ -20,14 +17,17 @@ export const uploadPhotos = async (photos: File[]): Promise<Photography> => {
   }
 
   const { data } = await response.json();
-  return data; 
+  return data;
 };
 
 export const getPhotos = async (): Promise<Photography[]> => {
   const response = await fetch(`${BASE_URL}?order=desc`);
 
   if (!response.ok) {
-    throw new ResponseError(`Error obteniendo las fotografías`, response.status);
+    throw new ResponseError(
+      `Error obteniendo las fotografías`,
+      response.status
+    );
   }
 
   const { data } = await response.json();
@@ -54,6 +54,9 @@ export const deletePhotos = async (photoIds: string[]): Promise<void> => {
   });
 
   if (!response.ok) {
-    throw new ResponseError(`Error eliminando las fotografías`, response.status);
+    throw new ResponseError(
+      `Error eliminando las fotografías`,
+      response.status
+    );
   }
-}
+};
