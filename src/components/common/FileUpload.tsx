@@ -81,7 +81,6 @@ const FileUpload: React.FC<{
         zodSchema.parse({ file });
         return null;
       } catch (error) {
-        console.log("Validation error:", error);
         if (error instanceof ZodError) {
           return error.errors[0]?.message || "Invalid file";
         }
