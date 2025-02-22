@@ -9,6 +9,9 @@ export const uploadPhotos = async (photos: File[]): Promise<Photography> => {
 
   const response = await fetch(`${BASE_URL}/upload-multiple`, {
     method: "POST",
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
     body: formData,
   });
 
