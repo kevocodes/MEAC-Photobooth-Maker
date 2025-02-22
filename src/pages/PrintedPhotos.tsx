@@ -1,15 +1,13 @@
 import ConfirmationModal from "@/components/common/ConfirmationModal";
 import LoaderSpinner from "@/components/common/LoaderSpinner";
 import UploadImagesModal from "@/components/printedPhotos/UploadImagesModal";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PublicRoutes } from "@/constants/routes";
 import { cn } from "@/lib/utils";
 import { Photography } from "@/models/photography.model";
 import { ResponseError } from "@/models/ResponseError";
-import {
-  deletePhotos,
-  getPhotos,
-} from "@/services/photos.service";
+import { deletePhotos, getPhotos } from "@/services/photos.service";
 import { getNextMultiple } from "@/utils/mathOperations.util";
 import {
   Image,
@@ -50,7 +48,6 @@ function PrintedPhotos() {
 
     fetchPhotos();
   }, [refetch]);
-
 
   const handleDeletePhotos = async () => {
     await deletePhotos([
@@ -162,6 +159,10 @@ function PrintedPhotos() {
                   className="w-full h-full object-contain rounded-lg shadow-lg"
                   onClick={() => handleSelectPhoto(photo)}
                 />
+
+                <Badge className="absolute bottom-2 left-2 group-hover:opacity-100 opacity-0 transition-opacity duration-300 ease-in-out">
+                  {photo.code}
+                </Badge>
 
                 {selectedPhotographies.some(
                   (selectedPhoto) => selectedPhoto.id === photo.id
