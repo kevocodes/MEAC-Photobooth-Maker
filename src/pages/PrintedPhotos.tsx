@@ -50,6 +50,9 @@ function PrintedPhotos() {
   const handleDeletePhoto = async (photoId: string) => {
     await deletePhoto(photoId);
     setPhotographies((prev) => prev.filter((photo) => photo.id !== photoId));
+    setSelectedPhotographies((prev) =>
+      prev.filter((photo) => photo.id !== photoId)
+    );
     toast.success("Fotografía eliminada correctamente");
   };
 
