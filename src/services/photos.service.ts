@@ -21,7 +21,7 @@ export const uploadPhotos = async (photos: File[]): Promise<Photography> => {
 };
 
 export const getPhotos = async (): Promise<Photography[]> => {
-  const response = await fetch(BASE_URL);
+  const response = await fetch(`${BASE_URL}?order=desc`);
 
   if (!response.ok) {
     throw new ResponseError(`Error obteniendo las fotografías`, response.status);
