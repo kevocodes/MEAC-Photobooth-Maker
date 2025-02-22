@@ -40,3 +40,17 @@ export const deletePhoto = async (photoId: string): Promise<void> => {
     throw new ResponseError(`Error eliminando la fotografía`, response.status);
   }
 };
+
+export const deletePhotos = async (photoIds: string[]): Promise<void> => {
+  const response = await fetch(`${BASE_URL}/delete-multiple`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ ids: photoIds }),
+  });
+
+  if (!response.ok) {
+    throw new ResponseError(`Error eliminando las fotografías`, response.status);
+  }
+}

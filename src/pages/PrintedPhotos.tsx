@@ -6,7 +6,10 @@ import { PublicRoutes } from "@/constants/routes";
 import { cn } from "@/lib/utils";
 import { Photography } from "@/models/photography.model";
 import { ResponseError } from "@/models/ResponseError";
-import { deletePhoto, getPhotos } from "@/services/photos.service";
+import {
+  deletePhotos,
+  getPhotos,
+} from "@/services/photos.service";
 import { getNextMultiple } from "@/utils/mathOperations.util";
 import {
   Image,
@@ -15,6 +18,7 @@ import {
   Printer,
   SquareDashedMousePointer,
   TrashIcon,
+  X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -47,13 +51,22 @@ function PrintedPhotos() {
     fetchPhotos();
   }, [refetch]);
 
-  const handleDeletePhoto = async (photoId: string) => {
-    await deletePhoto(photoId);
-    setPhotographies((prev) => prev.filter((photo) => photo.id !== photoId));
-    setSelectedPhotographies((prev) =>
-      prev.filter((photo) => photo.id !== photoId)
+
+  const handleDeletePhotos = async () => {
+    await deletePhotos([
+      ...new Set(selectedPhotographies.map((photo) => photo.id)),
+    ]);
+
+    setPhotographies((prev) =>
+      prev.filter(
+        (photo) =>
+          !selectedPhotographies.some(
+            (selectedPhoto) => selectedPhoto.id === photo.id
+          )
+      )
     );
-    toast.success("Fotografía eliminada correctamente");
+    setSelectedPhotographies([]);
+    toast.success("Fotografías eliminadas correctamente");
   };
 
   const handleSelectPhoto = (photo: Photography) => {
@@ -71,6 +84,12 @@ function PrintedPhotos() {
       cloned.splice(index, 1);
       return [...cloned];
     });
+  };
+
+  const handleUnselectAllPhotos = (photo: Photography) => {
+    setSelectedPhotographies((prev) =>
+      prev.filter((selectedPhoto) => selectedPhoto.id !== photo.id)
+    );
   };
 
   const handlePrintPhotos = () => {
@@ -106,9 +125,20 @@ function PrintedPhotos() {
                     {getNextMultiple(selectedPhotographies.length, 4)}
                   </h1>
                 </div>
+
                 <Button variant="outline" onClick={handlePrintPhotos}>
                   <Printer className="w-6 h-6 text-primary" />
                 </Button>
+
+                <ConfirmationModal
+                  title="Eliminar fotografías"
+                  description="¿Estás seguro de eliminar estas fotografías?"
+                  onAccept={handleDeletePhotos}
+                >
+                  <Button variant="outline">
+                    <TrashIcon className="w-6 h-6 text-primary" />
+                  </Button>
+                </ConfirmationModal>
               </>
             )}
             <UploadImagesModal doRefetch={() => setRefetch((prev) => !prev)} />
@@ -132,28 +162,28 @@ function PrintedPhotos() {
                   className="w-full h-full object-contain rounded-lg shadow-lg"
                   onClick={() => handleSelectPhoto(photo)}
                 />
-                <ConfirmationModal
-                  title="Eliminar fotografía"
-                  description="¿Estás seguro de eliminar esta fotografía?"
-                  onAccept={() => handleDeletePhoto(photo.id)}
-                >
-                  <Button className="absolute top-2 right-2 invisible group-hover:visible">
-                    <TrashIcon className="w-6 h-6" />
-                  </Button>
-                </ConfirmationModal>
+
                 {selectedPhotographies.some(
                   (selectedPhoto) => selectedPhoto.id === photo.id
                 ) && (
                   <>
-                    <Button
-                      variant="ghost"
-                      className="absolute top-2 left-2"
-                      onClick={() => handleUnselectPhoto(photo)}
-                    >
-                      <Minus className="w-6 h-6" />
-                    </Button>
+                    <div className="absolute top-2 right-2 flex justify-center items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleUnselectPhoto(photo)}
+                      >
+                        <Minus className="w-6 h-6" />
+                      </Button>
 
-                    <div className="absolute bottom-2 left-2 flex justify-center items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        onClick={() => handleUnselectAllPhotos(photo)}
+                      >
+                        <X className="w-6 h-6" />
+                      </Button>
+                    </div>
+
+                    <div className="absolute bottom-2 right-2 flex justify-center items-center gap-2">
                       <SquareDashedMousePointer className="w-6 h-6 text-primary" />
                       <h1 className="font-bold text-center">
                         {
