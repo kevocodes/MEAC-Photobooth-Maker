@@ -63,73 +63,52 @@ interface ImagesPrintableProps {
 }
 
 const ImagesPrintable = ({ photos }: ImagesPrintableProps) => {
-  const pages = photos.length / 4;
-  
+  const pages = Math.ceil(photos.length / 4);
+
   return (
     <Document>
-      {[...Array(pages)].map((_, index) => (
-        <Page size="LETTER" style={styles.page} orientation="landscape" key={index}>
-          {/* Primera fila */}
-          <View style={styles.row}>
-            <View style={styles.cell}>
-              <Image style={styles.photo} src={photos[index].url} />
-              <Image style={styles.frame} src={marco} />
-              <Text style={styles.code}>{photos[index].code}</Text>
+      {[...Array(pages)].map((_, index) => {
+        const startIndex = index * 4;
+        return (
+          <Page size="LETTER" style={styles.page} orientation="landscape" key={index}>
+            <View style={styles.row}>
+              {startIndex < photos.length && (
+                <View style={styles.cell}>
+                  <Image style={styles.photo} src={photos[startIndex].url} />
+                  <Image style={styles.frame} src={marco} />
+                  <Text style={styles.code}>{photos[startIndex].code}</Text>
+                </View>
+              )}
+              {startIndex + 1 < photos.length && (
+                <View style={styles.cell}>
+                  <Image style={styles.photo} src={photos[startIndex + 1].url} />
+                  <Image style={styles.frame} src={marco} />
+                  <Text style={styles.code}>{photos[startIndex + 1].code}</Text>
+                </View>
+              )}
             </View>
-            <View style={styles.cell}>
-              <Image style={styles.photo} src={photos[index+1].url} />
-              <Image style={styles.frame} src={marco} />
-              <Text style={styles.code}>{photos[index+1].code}</Text>
-
+            <View style={[styles.row, { marginBottom: 0 }]}>
+              {startIndex + 2 < photos.length && (
+                <View style={styles.cell}>
+                  <Image style={styles.photo} src={photos[startIndex + 2].url} />
+                  <Image style={styles.frame} src={marco} />
+                  <Text style={styles.code}>{photos[startIndex + 2].code}</Text>
+                </View>
+              )}
+              {startIndex + 3 < photos.length && (
+                <View style={styles.cell}>
+                  <Image style={styles.photo} src={photos[startIndex + 3].url} />
+                  <Image style={styles.frame} src={marco} />
+                  <Text style={styles.code}>{photos[startIndex + 3].code}</Text>
+                </View>
+              )}
             </View>
-          </View>
-          {/* Segunda fila (quitamos el marginBottom extra en la última fila) */}
-          <View style={[styles.row, { marginBottom: 0 }]}>
-            <View style={styles.cell}>
-              <Image style={styles.photo} src={photos[index+2].url} />
-              <Image style={styles.frame} src={marco} />
-              <Text style={styles.code}>{photos[index+2].code}</Text>
-
-            </View>
-            <View style={styles.cell}>
-              <Image style={styles.photo} src={photos[index+3].url} />
-              <Image style={styles.frame} src={marco} />
-              <Text style={styles.code}>{photos[index+3].code}</Text>
-            </View>
-          </View>
-        </Page>
-      ))}
+          </Page>
+        );
+      })}
     </Document>
   );
-
-  // return (
-  //   <Document>
-  // <Page size="LETTER" style={styles.page} orientation="landscape">
-  //   {/* Primera fila */}
-  //   <View style={styles.row}>
-  //     <View style={styles.cell}>
-  //       <Image style={styles.photo} src="/ejemplo.jpg" />
-  //       <Image style={styles.frame} src="/Marco.png" />
-  //     </View>
-  //     <View style={styles.cell}>
-  //       <Image style={styles.photo} src="/ejemplo.jpg" />
-  //       <Image style={styles.frame} src="/Marco.png" />
-  //     </View>
-  //   </View>
-  //   {/* Segunda fila (quitamos el marginBottom extra en la última fila) */}
-  //   <View style={[styles.row, { marginBottom: 0 }]}>
-  //     <View style={styles.cell}>
-  //       <Image style={styles.photo} src="/ejemplo.jpg" />
-  //       <Image style={styles.frame} src="/Marco.png" />
-  //     </View>
-  //     <View style={styles.cell}>
-  //       <Image style={styles.photo} src="/ejemplo.jpg" />
-  //       <Image style={styles.frame} src="/Marco.png" />
-  //     </View>
-  //   </View>
-  // </Page>
-  //   </Document>
-  // );
 };
+
 
 export default ImagesPrintable;
