@@ -8,7 +8,7 @@ import { PublicRoutes } from "@/constants/routes";
 import PhotoUpload from "@/pages/PhotoUpload";
 import PDFDownload from "@/pages/PDFDownload";
 import MainLayout from "@/layouts/MainLayout";
-import PrintedPhotos from "@/pages/PrintedPhotos";
+import PrintedPhotos from "@/pages/LoadedPhotos";
 
 function App() {
   return (

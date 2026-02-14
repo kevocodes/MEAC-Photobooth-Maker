@@ -22,11 +22,14 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-function PrintedPhotos() {
+function LoadedPhotos() {
   const [photographies, setPhotographies] = useState<Photography[]>([]);
   const [selectedPhotographies, setSelectedPhotographies] = useState<
     Photography[]
   >([]);
+  const [lastSelectedIndex, setLastSelectedIndex] = useState<number | null>(
+    null
+  );
   const [loading, setLoading] = useState(false);
   const [refetch, setRefetch] = useState(false);
 
@@ -66,10 +69,27 @@ function PrintedPhotos() {
     toast.success("Fotografías eliminadas correctamente");
   };
 
-  const handleSelectPhoto = (photo: Photography) => {
+  const handleSelectPhoto = (
+    photo: Photography,
+    photoIndex: number,
+    isShiftPressed: boolean
+  ) => {
     setSelectedPhotographies((prev) => {
+      if (isShiftPressed && lastSelectedIndex !== null) {
+        const rangeStart = Math.min(lastSelectedIndex, photoIndex);
+        const rangeEnd = Math.max(lastSelectedIndex, photoIndex);
+        const photosInRange = photographies.slice(rangeStart, rangeEnd + 1);
+        const selectedPhotoIds = new Set(prev.map((selected) => selected.id));
+        const photosToAdd = photosInRange.filter(
+          (rangePhoto) => !selectedPhotoIds.has(rangePhoto.id)
+        );
+
+        return [...prev, ...photosToAdd];
+      }
+
       return [...prev, photo];
     });
+    setLastSelectedIndex(photoIndex);
   };
 
   const handleUnselectPhoto = (photo: Photography) => {
@@ -87,6 +107,11 @@ function PrintedPhotos() {
     setSelectedPhotographies((prev) =>
       prev.filter((selectedPhoto) => selectedPhoto.id !== photo.id)
     );
+  };
+
+  const handleUnselectAll = () => {
+    setSelectedPhotographies([]);
+    setLastSelectedIndex(null);
   };
 
   const handlePrintPhotos = () => {
@@ -127,6 +152,14 @@ function PrintedPhotos() {
                   <Printer className="w-6 h-6 text-primary" />
                 </Button>
 
+                <Button
+                  variant="outline"
+                  onClick={handleUnselectAll}
+                  title="Deseleccionar todas"
+                >
+                  <X className="w-6 h-6 text-primary" />
+                </Button>
+
                 <ConfirmationModal
                   title="Eliminar fotografías"
                   description="¿Estás seguro de eliminar estas fotografías?"
@@ -140,8 +173,9 @@ function PrintedPhotos() {
             )}
             <UploadImagesModal doRefetch={() => setRefetch((prev) => !prev)} />
           </section>
+
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {photographies.map((photo) => (
+            {photographies.map((photo, index) => (
               <figure
                 className={cn(
                   "max-w-[300px] h-[300px] relative group rounded-lg cursor-pointer",
@@ -157,7 +191,9 @@ function PrintedPhotos() {
                   src={photo.url}
                   alt={photo.code}
                   className="w-full h-full object-contain rounded-lg shadow-lg"
-                  onClick={() => handleSelectPhoto(photo)}
+                  onClick={(event) =>
+                    handleSelectPhoto(photo, index, event.shiftKey)
+                  }
                 />
 
                 <Badge className="absolute bottom-2 left-2 group-hover:opacity-100 opacity-0 transition-opacity duration-300 ease-in-out">
@@ -221,4 +257,4 @@ function PrintedPhotos() {
   );
 }
 
-export default PrintedPhotos;
+export default LoadedPhotos;
