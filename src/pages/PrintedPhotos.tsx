@@ -1,13 +1,11 @@
-import ConfirmationModal from "@/components/common/ConfirmationModal";
 import LoaderSpinner from "@/components/common/LoaderSpinner";
-import UploadImagesModal from "@/components/printedPhotos/UploadImagesModal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PublicRoutes } from "@/constants/routes";
 import { cn } from "@/lib/utils";
-import { Photography } from "@/models/photography.model";
 import { ResponseError } from "@/models/ResponseError";
-import { deletePhotos, getPhotos } from "@/services/photos.service";
+import { Photography } from "@/models/photography.model";
+import { getPhotos } from "@/services/photos.service";
 import { getNextMultiple } from "@/utils/mathOperations.util";
 import {
   Image,
@@ -15,14 +13,13 @@ import {
   Minus,
   Printer,
   SquareDashedMousePointer,
-  TrashIcon,
   X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-function LoadedPhotos() {
+function PrintedPhotos() {
   const [photographies, setPhotographies] = useState<Photography[]>([]);
   const [selectedPhotographies, setSelectedPhotographies] = useState<
     Photography[]
@@ -31,43 +28,25 @@ function LoadedPhotos() {
     null
   );
   const [loading, setLoading] = useState(false);
-  const [refetch, setRefetch] = useState(false);
 
   const navigator = useNavigate();
 
   useEffect(() => {
-    async function fetchPhotos() {
+    async function fetchPrintedPhotos() {
       try {
         setLoading(true);
-        const photosResponse = await getPhotos({ printed: false });
+        const photosResponse = await getPhotos({ printed: true });
         setPhotographies(photosResponse);
       } catch (error) {
         if (error instanceof ResponseError) return toast.error(error.message);
-        toast.error("Ocurrió un error al cargar las fotos");
+        toast.error("Ocurrió un error al cargar las fotos impresas");
       } finally {
         setLoading(false);
       }
     }
 
-    fetchPhotos();
-  }, [refetch]);
-
-  const handleDeletePhotos = async () => {
-    await deletePhotos([
-      ...new Set(selectedPhotographies.map((photo) => photo.id)),
-    ]);
-
-    setPhotographies((prev) =>
-      prev.filter(
-        (photo) =>
-          !selectedPhotographies.some(
-            (selectedPhoto) => selectedPhoto.id === photo.id
-          )
-      )
-    );
-    setSelectedPhotographies([]);
-    toast.success("Fotografías eliminadas correctamente");
-  };
+    fetchPrintedPhotos();
+  }, []);
 
   const handleSelectPhoto = (
     photo: Photography,
@@ -125,18 +104,33 @@ function LoadedPhotos() {
     });
   };
 
+  const distinctPrintedPhotos = photographies.length;
+  const totalPrintedPhotos = photographies.reduce(
+    (acc, photo) => acc + (photo.printedQuantity ?? 1),
+    0
+  );
+
   return (
     <main className="min-h-[calc(100dvh-56px)] flex flex-col gap-4 justify-center items-center relative px-4 py-6">
       {!loading && (
         <>
           <section className="sticky top-14 z-10 w-full flex flex-wrap gap-4 sm:gap-6 justify-center items-center py-3 bg-background/60 backdrop-blur-sm backdrop-filter">
             {photographies.length > 0 && (
-              <div className="flex justify-center items-center gap-2">
-                <Image className="w-6 h-6 text-primary" />
-                <h1 className="font-bold text-center">
-                  {photographies.length}
-                </h1>
-              </div>
+              <>
+                <div className="flex justify-center items-center gap-2">
+                  <Image className="w-6 h-6 text-primary" />
+                  <h1 className="font-bold text-center">
+                    {distinctPrintedPhotos} distintas
+                  </h1>
+                </div>
+
+                <div className="flex justify-center items-center gap-2">
+                  <Printer className="w-6 h-6 text-primary" />
+                  <h1 className="font-bold text-center">
+                    {totalPrintedPhotos} totales
+                  </h1>
+                </div>
+              </>
             )}
             {selectedPhotographies.length > 0 && (
               <>
@@ -159,19 +153,8 @@ function LoadedPhotos() {
                 >
                   <X className="w-6 h-6 text-primary" />
                 </Button>
-
-                <ConfirmationModal
-                  title="Eliminar fotografías"
-                  description="¿Estás seguro de eliminar estas fotografías?"
-                  onAccept={handleDeletePhotos}
-                >
-                  <Button variant="outline">
-                    <TrashIcon className="w-6 h-6 text-primary" />
-                  </Button>
-                </ConfirmationModal>
               </>
             )}
-            <UploadImagesModal doRefetch={() => setRefetch((prev) => !prev)} />
           </section>
 
           <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -231,16 +214,24 @@ function LoadedPhotos() {
                     </div>
                   </>
                 )}
+
+                <div className="absolute top-2 left-2 flex justify-center items-center gap-2 bg-background/80 rounded-md px-2 py-1">
+                  <Printer className="w-4 h-4 text-primary" />
+                  <h1 className="font-bold text-center text-xs">
+                    {photo.printedQuantity || 0}
+                  </h1>
+                </div>
               </figure>
             ))}
           </section>
         </>
       )}
+
       {!loading && photographies.length === 0 && (
         <div className="flex flex-col gap-6 items-center">
           <ImageOff className="w-20 h-20 sm:w-28 sm:h-28 text-primary" />
           <p className="text-center text-xl text-muted-foreground font-bold">
-            No hay fotografías para mostrar
+            No hay fotografías impresas para mostrar
           </p>
         </div>
       )}
@@ -257,4 +248,4 @@ function LoadedPhotos() {
   );
 }
 
-export default LoadedPhotos;
+export default PrintedPhotos;

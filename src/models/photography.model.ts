@@ -5,6 +5,8 @@ export interface Photography {
   width: number;
   height: number;
   public_id: string;
+  printedAt?: string | null;
+  printedQuantity?: number | null;
   createdAt: string;
   updatedAt: string;
 }

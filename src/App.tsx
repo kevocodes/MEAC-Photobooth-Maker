@@ -8,7 +8,8 @@ import { PublicRoutes } from "@/constants/routes";
 import PhotoUpload from "@/pages/PhotoUpload";
 import PDFDownload from "@/pages/PDFDownload";
 import MainLayout from "@/layouts/MainLayout";
-import PrintedPhotos from "@/pages/LoadedPhotos";
+import LoadedPhotos from "@/pages/LoadedPhotos";
+import PrintedPhotos from "@/pages/PrintedPhotos";
 
 function App() {
   return (
@@ -17,7 +18,11 @@ function App() {
         <Route element={<MainLayout />}>
           <Route path={PublicRoutes.Home} element={<PhotoUpload />} />
           <Route path={PublicRoutes.PDFDownload} element={<PDFDownload />} />
-          <Route path={PublicRoutes.PrintedPhotos} element={<PrintedPhotos />} />
+          <Route path={PublicRoutes.LoadedPhotos} element={<LoadedPhotos />} />
+          <Route
+            path={PublicRoutes.PrintedPhotos}
+            element={<PrintedPhotos />}
+          />
         </Route>
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

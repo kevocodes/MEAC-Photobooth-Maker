@@ -15,10 +15,22 @@ function Header() {
               className={cn(
                 "font-bold hover:bg-muted p-2 rounded-md relative",
                 location.pathname === PublicRoutes.Home &&
-                  " after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-full after:h-1 after:bg-primary"
+                  " after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-full after:h-1 after:bg-primary",
               )}
             >
               Inicio
+            </Link>
+          </li>
+          <li>
+            <Link
+              to={PublicRoutes.LoadedPhotos}
+              className={cn(
+                "font-bold hover:bg-muted p-2 rounded-md relative",
+                location.pathname === PublicRoutes.LoadedPhotos &&
+                  " after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-full after:h-1 after:bg-primary",
+              )}
+            >
+              Fotos Cargadas
             </Link>
           </li>
           <li>
@@ -27,7 +39,7 @@ function Header() {
               className={cn(
                 "font-bold hover:bg-muted p-2 rounded-md relative",
                 location.pathname === PublicRoutes.PrintedPhotos &&
-                  " after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-full after:h-1 after:bg-primary"
+                  " after:content-[''] after:absolute after:left-0 after:bottom-0 after:w-full after:h-1 after:bg-primary",
               )}
             >
               Fotos Impresas

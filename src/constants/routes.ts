@@ -1,5 +1,6 @@
 export enum PublicRoutes {
   Home = '/',
   PDFDownload = '/download-pdf',
-  PrintedPhotos = '/printed-photos',
+  LoadedPhotos = '/printed-photos',
+  PrintedPhotos = '/printed-history',
 }
