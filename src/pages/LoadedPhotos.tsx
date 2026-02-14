@@ -125,6 +125,15 @@ function LoadedPhotos() {
     });
   };
 
+  const handleCopyPhotoCode = async (code: string) => {
+    try {
+      await window.navigator.clipboard.writeText(code);
+      toast.success(`Código ${code} copiado al portapapeles`);
+    } catch {
+      toast.error("No se pudo copiar el código");
+    }
+  };
+
   return (
     <main className="min-h-[calc(100dvh-56px)] flex flex-col gap-4 justify-center items-center relative px-4 py-6">
       {!loading && (
@@ -196,7 +205,13 @@ function LoadedPhotos() {
                   }
                 />
 
-                <Badge className="absolute bottom-2 left-2 group-hover:opacity-100 opacity-0 transition-opacity duration-300 ease-in-out">
+                <Badge
+                  className="absolute bottom-2 left-2 cursor-copy group-hover:opacity-100 opacity-0 transition-opacity duration-300 ease-in-out pointer-events-none group-hover:pointer-events-auto"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    void handleCopyPhotoCode(photo.code);
+                  }}
+                >
                   {photo.code}
                 </Badge>
 

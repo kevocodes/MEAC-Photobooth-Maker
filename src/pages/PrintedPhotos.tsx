@@ -104,6 +104,15 @@ function PrintedPhotos() {
     });
   };
 
+  const handleCopyPhotoCode = async (code: string) => {
+    try {
+      await window.navigator.clipboard.writeText(code);
+      toast.success(`Código ${code} copiado al portapapeles`);
+    } catch {
+      toast.error("No se pudo copiar el código");
+    }
+  };
+
   const distinctPrintedPhotos = photographies.length;
   const totalPrintedPhotos = photographies.reduce(
     (acc, photo) => acc + (photo.printedQuantity ?? 1),
@@ -179,7 +188,13 @@ function PrintedPhotos() {
                   }
                 />
 
-                <Badge className="absolute bottom-2 left-2 group-hover:opacity-100 opacity-0 transition-opacity duration-300 ease-in-out">
+                <Badge
+                  className="absolute bottom-2 left-2 cursor-copy group-hover:opacity-100 opacity-0 transition-opacity duration-300 ease-in-out pointer-events-none group-hover:pointer-events-auto"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    void handleCopyPhotoCode(photo.code);
+                  }}
+                >
                   {photo.code}
                 </Badge>
 
